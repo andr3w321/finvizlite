@@ -6,7 +6,7 @@ HERE = pathlib.Path(__file__).parent
 README = (HERE / "README.md").read_text()
 
 setup(name='finvizlite',
-      version='0.1',
+      version='0.1.1',
       description='A lightweight finviz screener scraper',
       long_description=README,
       long_description_content_type="text/markdown",
