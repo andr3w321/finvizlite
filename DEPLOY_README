@@ -1,0 +1,11 @@
+#update setup.py to new version
+python setup.py sdist bdist_wheel --universal
+twine upload dist/*
+
+#test code
+pytest
+#individual test
+python -m unittest finvizlite.tests.test_finvizlite.TestFinvizlite.test_rows_to_pages
+
+#install locally
+python setup.py install
