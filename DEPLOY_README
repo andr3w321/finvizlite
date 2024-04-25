@@ -1,9 +1,12 @@
 #update setup.py to new version
-python setup.py sdist bdist_wheel --universal
+python3 setup.py sdist bdist_wheel --universal
 twine upload dist/*
 
 #test code
-pytest
+ tox r
+# old method
+# pytest
+
 #individual test
 python -m unittest tests.test_finvizlite.TestFinvizlite.test_rows_to_pages
 

@@ -17,8 +17,7 @@ def get_new_query_url(old_url, param_field, new_param_value):
     new_url = pre_query_url + "?" + '&'.join('{}={}'.format(key, val) for key, val in params.items())
     return new_url
 
-def get_html(url):
-    hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11'}
+def get_html(url, hdr={'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11'}):
     res = requests.get(url, headers=hdr)
     if res.status_code == 200:
         return res.text
@@ -36,6 +35,10 @@ def get_pagination_urls(url, page_options):
 def get_df(tables):
     data = []
     trs = tables[3].find_all("tr")
+    cols = []
+    ths = trs[0].find_all("th")
+    for th in ths:
+        cols.append(th.text)
     for tr in trs:
         row = []
         tds = tr.find_all("td")
@@ -43,7 +46,7 @@ def get_df(tables):
             row.append(td.text)
         data.append(row)
     # don't return the header row
-    df = pd.DataFrame(data[1:], columns=data[0])
+    df = pd.DataFrame(data[1:], columns=cols)
     return df
 
 def scrape(url, return_df_only=True, print_urls=False):
@@ -70,10 +73,11 @@ def scrape(url, return_df_only=True, print_urls=False):
 def scrape_all(url, sleep_interval=0.1, print_urls=False, rows=100000):
     pagination_urls, df = scrape(url, return_df_only=False, print_urls=print_urls)
     max_pages = rows_to_pages(rows)
+    dfs = [df]
     for i in range(0, len(pagination_urls)):
         if i >= max_pages-1:
             break
         time.sleep(sleep_interval)
         next_df = scrape(pagination_urls[i], return_df_only=True, print_urls=print_urls)
-        df = df.append(next_df, ignore_index=True)
-    return df[:rows]
+        dfs.append(next_df)
+    return pd.concat(dfs, ignore_index=True)[:rows]

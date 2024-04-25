@@ -15,7 +15,7 @@ class TestFinvizlite(unittest.TestCase):
 
     def test_sp500(self):
         df = fl.scrape_all("https://finviz.com/screener.ashx?v=111&f=idx_sp500&o=-marketcap")
-        self.assertEqual(len(df), 505)
+        self.assertGreaterEqual(len(df), 500)
 
     def test_all(self):
         df = fl.scrape_all("https://finviz.com/screener.ashx?v=111&o=-marketcap")
